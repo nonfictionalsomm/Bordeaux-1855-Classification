@@ -59,7 +59,25 @@
 </head>
 <body class="flex items-center justify-center min-h-screen p-4">
 
-    <div id="game-container" class="w-full max-w-4xl mx-auto">
+    <!-- Start Game Modal -->
+    <div id="start-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-lg w-full text-center transform transition-all">
+            <h2 class="text-4xl font-bold mb-4 text-red-900">Welcome!</h2>
+            <p class="text-lg mb-6 text-left text-gray-700">Test your knowledge of the 1855 Médoc Classification.</p>
+            <div class="text-left space-y-3 mb-8 bg-red-800/5 p-4 rounded-lg border border-red-800/10">
+                <p><strong class="text-red-800">GOAL:</strong> Match the Château with its correct Classification and Region.</p>
+                <p><strong class="text-red-800">SCORING:</strong></p>
+                <ul class="list-disc list-inside pl-4 text-gray-600">
+                    <li><span class="font-bold text-green-700">+2 points</span> for a correct match on the first try.</li>
+                    <li><span class="font-bold text-green-700">+1 point</span> for a correct match on subsequent tries.</li>
+                    <li><span class="font-bold text-red-700">-1 point</span> for an incorrect match.</li>
+                </ul>
+            </div>
+            <button id="start-game-btn" class="w-full bg-red-800 text-white font-bold py-3 px-4 rounded-lg hover:bg-red-900 transition-colors text-xl">Start Game</button>
+        </div>
+    </div>
+
+    <div id="game-container" class="w-full max-w-4xl mx-auto hidden">
         <div class="text-center mb-6">
             <h1 class="text-4xl md:text-5xl font-bold text-red-900">Bordeaux Master</h1>
             <p class="text-lg text-gray-600 mt-2">1855 Médoc Classification Challenge</p>
@@ -93,11 +111,11 @@
                     </div>
                 </div>
 
-                <!-- Villages Column -->
+                <!-- Regions Column -->
                 <div>
-                    <h3 class="text-2xl font-bold text-center mb-4">Village</h3>
-                    <div id="villages-container" class="flex flex-col space-y-3">
-                        <!-- Village buttons will be inserted here -->
+                    <h3 class="text-2xl font-bold text-center mb-4">Region</h3>
+                    <div id="regions-container" class="flex flex-col space-y-3">
+                        <!-- Region buttons will be inserted here -->
                     </div>
                 </div>
             </div>
@@ -130,70 +148,70 @@
         // --- DATA ---
         // Data parsed from "Classifications - Médoc (1855).csv"
         const producersData = [
-            { classification: "First Growth", producer: "Château Lafite Rothschild", village: "Pauillac", notes: "" },
-            { classification: "First Growth", producer: "Château Latour", village: "Pauillac", notes: "" },
-            { classification: "First Growth", producer: "Château Margaux", village: "Margaux", notes: "" },
-            { classification: "First Growth", producer: "Château Mouton Rothschild", village: "Pauillac", notes: "Promoted in 1973" },
-            { classification: "Second Growth", producer: "Château Rausan-Ségla", village: "Margaux", notes: "" },
-            { classification: "Second Growth", producer: "Château Rauzan-Gassies", village: "Margaux", notes: "" },
-            { classification: "Second Growth", producer: "Château Léoville-Las Cases", village: "Saint-Julien", notes: "" },
-            { classification: "Second Growth", producer: "Château Léoville-Poyferré", village: "Saint-Julien", notes: "" },
-            { classification: "Second Growth", producer: "Château Léoville-Barton", village: "Saint-Julien", notes: "" },
-            { classification: "Second Growth", producer: "Château Durfort-Vivens", village: "Margaux", notes: "" },
-            { classification: "Second Growth", producer: "Château Gruaud-Larose", village: "Saint-Julien", notes: "" },
-            { classification: "Second Growth", producer: "Château Lascombes", village: "Margaux", notes: "" },
-            { classification: "Second Growth", producer: "Château Brane-Cantenac", village: "Margaux", notes: "" },
-            { classification: "Second Growth", producer: "Château Pichon Longueville Baron", village: "Pauillac", notes: "" },
-            { classification: "Second Growth", producer: "Château Pichon Longueville Comtesse de Lalande", village: "Pauillac", notes: "" },
-            { classification: "Second Growth", producer: "Château Ducru-Beaucaillou", village: "Saint-Julien", notes: "" },
-            { classification: "Second Growth", producer: "Château Cos d'Estournel", village: "Saint-Estèphe", notes: "" },
-            { classification: "Second Growth", producer: "Château Montrose", village: "Saint-Estèphe", notes: "" },
-            { classification: "Third Growth", producer: "Château Kirwan", village: "Margaux", notes: "" },
-            { classification: "Third Growth", producer: "Château d'Issan", village: "Margaux", notes: "" },
-            { classification: "Third Growth", producer: "Château Lagrange", village: "Saint-Julien", notes: "" },
-            { classification: "Third Growth", producer: "Château Langoa-Barton", village: "Saint-Julien", notes: "" },
-            { classification: "Third Growth", producer: "Château Giscours", village: "Margaux", notes: "" },
-            { classification: "Third Growth", producer: "Château Malescot St. Exupéry", village: "Margaux", notes: "" },
-            { classification: "Third Growth", producer: "Château Boyd-Cantenac", village: "Margaux", notes: "" },
-            { classification: "Third Growth", producer: "Château Cantenac-Brown", village: "Margaux", notes: "" },
-            { classification: "Third Growth", producer: "Château Palmer", village: "Margaux", notes: "" },
-            { classification: "Third Growth", producer: "Château La Lagune", village: "Haut-Médoc", notes: "" },
-            { classification: "Third Growth", producer: "Château Desmirail", village: "Margaux", notes: "" },
-            { classification: "Third Growth", producer: "Château Calon-Ségur", village: "Saint-Estèphe", notes: "" },
-            { classification: "Third Growth", producer: "Château Ferrière", village: "Margaux", notes: "" },
-            { classification: "Third Growth", producer: "Château Marquis d'Alesme Becker", village: "Margaux", notes: "" },
-            { classification: "Fourth Growth", producer: "Château Saint-Pierre", village: "Saint-Julien", notes: "" },
-            { classification: "Fourth Growth", producer: "Château Talbot", village: "Saint-Julien", notes: "" },
-            { classification: "Fourth Growth", producer: "Château Branaire-Ducru", village: "Saint-Julien", notes: "" },
-            { classification: "Fourth Growth", producer: "Château Duhart-Milon", village: "Pauillac", notes: "" },
-            { classification: "Fourth Growth", producer: "Château Pouget", village: "Margaux", notes: "" },
-            { classification: "Fourth Growth", producer: "Château La Tour Carnet", village: "Haut-Médoc", notes: "" },
-            { classification: "Fourth Growth", producer: "Château Lafon-Rochet", village: "Saint-Estèphe", notes: "" },
-            { classification: "Fourth Growth", producer: "Château Beychevelle", village: "Saint-Julien", notes: "" },
-            { classification: "Fourth Growth", producer: "Château Prieuré-Lichine", village: "Margaux", notes: "" },
-            { classification: "Fourth Growth", producer: "Château Marquis de Terme", village: "Margaux", notes: "" },
-            { classification: "Fifth Growth", producer: "Château Pontet-Canet", village: "Pauillac", notes: "" },
-            { classification: "Fifth Growth", producer: "Château Batailley", village: "Pauillac", notes: "" },
-            { classification: "Fifth Growth", producer: "Château Haut-Batailley", village: "Pauillac", notes: "" },
-            { classification: "Fifth Growth", producer: "Château Grand-Puy-Lacoste", village: "Pauillac", notes: "" },
-            { classification: "Fifth Growth", producer: "Château Grand-Puy-Ducasse", village: "Pauillac", notes: "" },
-            { classification: "Fifth Growth", producer: "Château Lynch-Bages", village: "Pauillac", notes: "" },
-            { classification: "Fifth Growth", producer: "Château Lynch-Moussas", village: "Pauillac", notes: "" },
-            { classification: "Fifth Growth", producer: "Château Dauzac", village: "Margaux", notes: "" },
-            { classification: "Fifth Growth", producer: "Château d'Armailhac", village: "Pauillac", notes: "" },
-            { classification: "Fifth Growth", producer: "Château du Tertre", village: "Margaux", notes: "" },
-            { classification: "Fifth Growth", producer: "Château Haut-Bages-Libéral", village: "Pauillac", notes: "" },
-            { classification: "Fifth Growth", producer: "Château Pédesclaux", village: "Pauillac", notes: "" },
-            { classification: "Fifth Growth", producer: "Château Belgrave", village: "Haut-Médoc", notes: "" },
-            { classification: "Fifth Growth", producer: "Château de Camensac", village: "Haut-Médoc", notes: "" },
-            { classification: "Fifth Growth", producer: "Château Cos Labory", village: "Saint-Estèphe", notes: "" },
-            { classification: "Fifth Growth", producer: "Château Clerc-Milon", village: "Pauillac", notes: "" },
-            { classification: "Fifth Growth", producer: "Château Croizet-Bages", village: "Pauillac", notes: "" },
-            { classification: "Fifth Growth", producer: "Château Cantemerle", village: "Haut-Médoc", notes: "" }
+            { classification: "First Growth", producer: "Château Lafite Rothschild", region: "Pauillac", notes: "" },
+            { classification: "First Growth", producer: "Château Latour", region: "Pauillac", notes: "" },
+            { classification: "First Growth", producer: "Château Margaux", region: "Margaux", notes: "" },
+            { classification: "First Growth", producer: "Château Mouton Rothschild", region: "Pauillac", notes: "Promoted in 1973" },
+            { classification: "Second Growth", producer: "Château Rausan-Ségla", region: "Margaux", notes: "" },
+            { classification: "Second Growth", producer: "Château Rauzan-Gassies", region: "Margaux", notes: "" },
+            { classification: "Second Growth", producer: "Château Léoville-Las Cases", region: "Saint-Julien", notes: "" },
+            { classification: "Second Growth", producer: "Château Léoville-Poyferré", region: "Saint-Julien", notes: "" },
+            { classification: "Second Growth", producer: "Château Léoville-Barton", region: "Saint-Julien", notes: "" },
+            { classification: "Second Growth", producer: "Château Durfort-Vivens", region: "Margaux", notes: "" },
+            { classification: "Second Growth", producer: "Château Gruaud-Larose", region: "Saint-Julien", notes: "" },
+            { classification: "Second Growth", producer: "Château Lascombes", region: "Margaux", notes: "" },
+            { classification: "Second Growth", producer: "Château Brane-Cantenac", region: "Margaux", notes: "" },
+            { classification: "Second Growth", producer: "Château Pichon Longueville Baron", region: "Pauillac", notes: "" },
+            { classification: "Second Growth", producer: "Château Pichon Longueville Comtesse de Lalande", region: "Pauillac", notes: "" },
+            { classification: "Second Growth", producer: "Château Ducru-Beaucaillou", region: "Saint-Julien", notes: "" },
+            { classification: "Second Growth", producer: "Château Cos d'Estournel", region: "Saint-Estèphe", notes: "" },
+            { classification: "Second Growth", producer: "Château Montrose", region: "Saint-Estèphe", notes: "" },
+            { classification: "Third Growth", producer: "Château Kirwan", region: "Margaux", notes: "" },
+            { classification: "Third Growth", producer: "Château d'Issan", region: "Margaux", notes: "" },
+            { classification: "Third Growth", producer: "Château Lagrange", region: "Saint-Julien", notes: "" },
+            { classification: "Third Growth", producer: "Château Langoa-Barton", region: "Saint-Julien", notes: "" },
+            { classification: "Third Growth", producer: "Château Giscours", region: "Margaux", notes: "" },
+            { classification: "Third Growth", producer: "Château Malescot St. Exupéry", region: "Margaux", notes: "" },
+            { classification: "Third Growth", producer: "Château Boyd-Cantenac", region: "Margaux", notes: "" },
+            { classification: "Third Growth", producer: "Château Cantenac-Brown", region: "Margaux", notes: "" },
+            { classification: "Third Growth", producer: "Château Palmer", region: "Margaux", notes: "" },
+            { classification: "Third Growth", producer: "Château La Lagune", region: "Haut-Médoc", notes: "" },
+            { classification: "Third Growth", producer: "Château Desmirail", region: "Margaux", notes: "" },
+            { classification: "Third Growth", producer: "Château Calon-Ségur", region: "Saint-Estèphe", notes: "" },
+            { classification: "Third Growth", producer: "Château Ferrière", region: "Margaux", notes: "" },
+            { classification: "Third Growth", producer: "Château Marquis d'Alesme Becker", region: "Margaux", notes: "" },
+            { classification: "Fourth Growth", producer: "Château Saint-Pierre", region: "Saint-Julien", notes: "" },
+            { classification: "Fourth Growth", producer: "Château Talbot", region: "Saint-Julien", notes: "" },
+            { classification: "Fourth Growth", producer: "Château Branaire-Ducru", region: "Saint-Julien", notes: "" },
+            { classification: "Fourth Growth", producer: "Château Duhart-Milon", region: "Pauillac", notes: "" },
+            { classification: "Fourth Growth", producer: "Château Pouget", region: "Margaux", notes: "" },
+            { classification: "Fourth Growth", producer: "Château La Tour Carnet", region: "Haut-Médoc", notes: "" },
+            { classification: "Fourth Growth", producer: "Château Lafon-Rochet", region: "Saint-Estèphe", notes: "" },
+            { classification: "Fourth Growth", producer: "Château Beychevelle", region: "Saint-Julien", notes: "" },
+            { classification: "Fourth Growth", producer: "Château Prieuré-Lichine", region: "Margaux", notes: "" },
+            { classification: "Fourth Growth", producer: "Château Marquis de Terme", region: "Margaux", notes: "" },
+            { classification: "Fifth Growth", producer: "Château Pontet-Canet", region: "Pauillac", notes: "" },
+            { classification: "Fifth Growth", producer: "Château Batailley", region: "Pauillac", notes: "" },
+            { classification: "Fifth Growth", producer: "Château Haut-Batailley", region: "Pauillac", notes: "" },
+            { classification: "Fifth Growth", producer: "Château Grand-Puy-Lacoste", region: "Pauillac", notes: "" },
+            { classification: "Fifth Growth", producer: "Château Grand-Puy-Ducasse", region: "Pauillac", notes: "" },
+            { classification: "Fifth Growth", producer: "Château Lynch-Bages", region: "Pauillac", notes: "" },
+            { classification: "Fifth Growth", producer: "Château Lynch-Moussas", region: "Pauillac", notes: "" },
+            { classification: "Fifth Growth", producer: "Château Dauzac", region: "Margaux", notes: "" },
+            { classification: "Fifth Growth", producer: "Château d'Armailhac", region: "Pauillac", notes: "This estate was known as Mouton-Baronne-Philippe from 1933-1988." },
+            { classification: "Fifth Growth", producer: "Château du Tertre", region: "Margaux", notes: "" },
+            { classification: "Fifth Growth", producer: "Château Haut-Bages-Libéral", region: "Pauillac", notes: "" },
+            { classification: "Fifth Growth", producer: "Château Pédesclaux", region: "Pauillac", notes: "" },
+            { classification: "Fifth Growth", producer: "Château Belgrave", region: "Haut-Médoc", notes: "" },
+            { classification: "Fifth Growth", producer: "Château de Camensac", region: "Haut-Médoc", notes: "" },
+            { classification: "Fifth Growth", producer: "Château Cos Labory", region: "Saint-Estèphe", notes: "" },
+            { classification: "Fifth Growth", producer: "Château Clerc-Milon", region: "Pauillac", notes: "" },
+            { classification: "Fifth Growth", producer: "Château Croizet-Bages", region: "Pauillac", notes: "" },
+            { classification: "Fifth Growth", producer: "Château Cantemerle", region: "Haut-Médoc", notes: "" }
         ];
 
         const classifications = ['First Growth', 'Second Growth', 'Third Growth', 'Fourth Growth', 'Fifth Growth'];
-        const villages = ['Pauillac', 'Margaux', 'Saint-Julien', 'Saint-Estèphe', 'Haut-Médoc'];
+        const regions = ['Pauillac', 'Margaux', 'Saint-Julien', 'Saint-Estèphe', 'Haut-Médoc'];
         const positiveMessages = ["Great job!", "Good work.", "What a pro!", "Awesome!", "You're on a roll!", "Magnifique!", "Superb!"];
         const TOTAL_ROUNDS = 20;
 
@@ -203,16 +221,19 @@
         let gameProducers = [];
         let currentProducer = {};
         let classificationCorrect = false;
-        let villageCorrect = false;
+        let regionCorrect = false;
         let classificationAttempts = 0;
-        let villageAttempts = 0;
+        let regionAttempts = 0;
 
         // --- DOM ELEMENTS ---
+        const gameContainer = document.getElementById('game-container');
+        const startModal = document.getElementById('start-modal');
+        const startGameBtn = document.getElementById('start-game-btn');
         const scoreInfo = document.getElementById('score-info');
         const roundInfo = document.getElementById('round-info');
         const producerName = document.getElementById('producer-name');
         const classificationsContainer = document.getElementById('classifications-container');
-        const villagesContainer = document.getElementById('villages-container');
+        const regionsContainer = document.getElementById('regions-container');
         const successModal = document.getElementById('success-modal');
         const gameOverModal = document.getElementById('game-over-modal');
         const nextRoundBtn = document.getElementById('next-round-btn');
@@ -240,7 +261,6 @@
             shuffleArray(producersData);
             gameProducers = producersData.slice(0, TOTAL_ROUNDS);
             
-            updateScoreboard();
             startRound();
         }
         
@@ -255,9 +275,9 @@
 
             // Reset round state
             classificationCorrect = false;
-            villageCorrect = false;
+            regionCorrect = false;
             classificationAttempts = 0;
-            villageAttempts = 0;
+            regionAttempts = 0;
             currentProducer = gameProducers[currentRound - 1];
 
             producerName.textContent = currentProducer.producer;
@@ -266,11 +286,11 @@
         }
 
         /**
-         * Renders the choice buttons for classification and village.
+         * Renders the choice buttons for classification and region.
          */
         function renderButtons() {
             classificationsContainer.innerHTML = '';
-            villagesContainer.innerHTML = '';
+            regionsContainer.innerHTML = '';
 
             classifications.forEach(c => {
                 const button = document.createElement('button');
@@ -280,24 +300,24 @@
                 classificationsContainer.appendChild(button);
             });
 
-            villages.forEach(v => {
+            regions.forEach(r => {
                 const button = document.createElement('button');
-                button.textContent = v;
+                button.textContent = r;
                 button.classList.add('btn-choice', 'w-full', 'text-left', 'p-4', 'rounded-lg', 'font-semibold');
-                button.onclick = () => handleSelection('village', v, button);
-                villagesContainer.appendChild(button);
+                button.onclick = () => handleSelection('region', r, button);
+                regionsContainer.appendChild(button);
             });
         }
         
         /**
-         * Handles the player's selection of a classification or village.
-         * @param {string} type - 'classification' or 'village'.
+         * Handles the player's selection of a classification or region.
+         * @param {string} type - 'classification' or 'region'.
          * @param {string} value - The selected value.
          * @param {HTMLElement} button - The button element that was clicked.
          */
         function handleSelection(type, value, button) {
             // Prevent clicking if that category is already correct
-            if ((type === 'classification' && classificationCorrect) || (type === 'village' && villageCorrect)) {
+            if ((type === 'classification' && classificationCorrect) || (type === 'region' && regionCorrect)) {
                 return;
             }
 
@@ -305,14 +325,14 @@
             if (type === 'classification') {
                 classificationAttempts++;
                 isCorrect = (value === currentProducer.classification);
-            } else { // village
-                villageAttempts++;
-                isCorrect = (value === currentProducer.village);
+            } else { // region
+                regionAttempts++;
+                isCorrect = (value === currentProducer.region);
             }
 
             if (isCorrect) {
                 // Check if it's the first attempt for this category to award bonus points
-                const isFirstAttempt = (type === 'classification' && classificationAttempts === 1) || (type === 'village' && villageAttempts === 1);
+                const isFirstAttempt = (type === 'classification' && classificationAttempts === 1) || (type === 'region' && regionAttempts === 1);
                 
                 if (isFirstAttempt) {
                     score += 2; // 2 points for a correct answer on the first try
@@ -328,9 +348,9 @@
                         if (!btn.classList.contains('correct')) btn.disabled = true;
                     });
                 } else {
-                    villageCorrect = true;
-                    // Disable other village buttons
-                    Array.from(villagesContainer.children).forEach(btn => {
+                    regionCorrect = true;
+                    // Disable other region buttons
+                    Array.from(regionsContainer.children).forEach(btn => {
                         if (!btn.classList.contains('correct')) btn.disabled = true;
                     });
                 }
@@ -346,7 +366,7 @@
             updateScoreboard();
 
             // Check if both are correct to end the round
-            if (classificationCorrect && villageCorrect) {
+            if (classificationCorrect && regionCorrect) {
                 setTimeout(showSuccessModal, 500);
             }
         }
@@ -402,7 +422,7 @@
             const finalPercentageEl = document.getElementById('final-percentage');
             const finalMessageEl = document.getElementById('final-score-message');
 
-            // Max score is 4 points per round (2 for classification, 2 for village, on first try)
+            // Max score is 4 points per round (2 for classification, 2 for region, on first try)
             const maxScore = TOTAL_ROUNDS * 4;
             // Calculate percentage, ensuring it's not below 0.
             const percentage = Math.round(Math.max(0, (score / maxScore) * 100));
@@ -446,11 +466,14 @@
         }
 
         // --- EVENT LISTENERS ---
+        startGameBtn.addEventListener('click', () => {
+            startModal.classList.add('hidden');
+            gameContainer.classList.remove('hidden');
+            initGame();
+        });
+        
         nextRoundBtn.addEventListener('click', hideSuccessModal);
         playAgainBtn.addEventListener('click', hideGameOver);
-
-        // --- INITIALIZE GAME ---
-        document.addEventListener('DOMContentLoaded', initGame);
 
     </script>
 </body>
