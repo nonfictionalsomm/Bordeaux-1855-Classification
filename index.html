@@ -286,13 +286,19 @@
         }
 
         /**
-         * Renders the choice buttons for classification and region.
+         * Renders the choice buttons for classification and region in a random order.
          */
         function renderButtons() {
             classificationsContainer.innerHTML = '';
             regionsContainer.innerHTML = '';
 
-            classifications.forEach(c => {
+            // Create shuffled copies of the arrays to randomize button order
+            const shuffledClassifications = [...classifications];
+            const shuffledRegions = [...regions];
+            shuffleArray(shuffledClassifications);
+            shuffleArray(shuffledRegions);
+
+            shuffledClassifications.forEach(c => {
                 const button = document.createElement('button');
                 button.textContent = c;
                 button.classList.add('btn-choice', 'w-full', 'text-left', 'p-4', 'rounded-lg', 'font-semibold');
@@ -300,7 +306,7 @@
                 classificationsContainer.appendChild(button);
             });
 
-            regions.forEach(r => {
+            shuffledRegions.forEach(r => {
                 const button = document.createElement('button');
                 button.textContent = r;
                 button.classList.add('btn-choice', 'w-full', 'text-left', 'p-4', 'rounded-lg', 'font-semibold');
@@ -355,7 +361,8 @@
                     });
                 }
             } else {
-                score--; // -1 point for an incorrect answer
+                // Decrement score but not below zero
+                score = Math.max(0, score - 1);
                 button.classList.add('incorrect');
                 // Remove incorrect class after animation
                 setTimeout(() => {
