@@ -63,7 +63,7 @@
     <div id="start-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop">
         <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-lg w-full text-center transform transition-all">
             <h2 class="text-4xl font-bold mb-4 text-red-900">Welcome!</h2>
-            <p class="text-lg mb-6 text-left text-gray-700">Test your knowledge of the 1855 Médoc Classification.</p>
+            <p class="text-lg mb-6 text-left text-gray-700">Test your knowledge of the 1855 Classification.</p>
             <div class="text-left space-y-3 mb-8 bg-red-800/5 p-4 rounded-lg border border-red-800/10">
                 <p><strong class="text-red-800">GOAL:</strong> Match the Château with its correct Classification and Region.</p>
                 <p><strong class="text-red-800">SCORING:</strong></p>
@@ -210,8 +210,8 @@
             { classification: "Fifth Growth", producer: "Château Cantemerle", region: "Haut-Médoc", notes: "" }
         ];
 
-        const classifications = ['First Growth', 'Second Growth', 'Third Growth', 'Fourth Growth', 'Fifth Growth'];
-        const regions = ['Pauillac', 'Margaux', 'Saint-Julien', 'Saint-Estèphe', 'Haut-Médoc', 'Graves'];
+        const allClassifications = ['First Growth', 'Second Growth', 'Third Growth', 'Fourth Growth', 'Fifth Growth'];
+        const allRegions = ['Pauillac', 'Margaux', 'Saint-Julien', 'Saint-Estèphe', 'Haut-Médoc', 'Graves'];
         const positiveMessages = ["Great job!", "Good work.", "What a pro!", "Awesome!", "You're on a roll!", "Magnifique!", "Superb!"];
         const TOTAL_ROUNDS = 20;
 
@@ -286,18 +286,15 @@
         }
 
         /**
-         * Renders the choice buttons for classification and region in a random order.
+         * Renders the choice buttons for classification and region.
          */
         function renderButtons() {
             classificationsContainer.innerHTML = '';
             regionsContainer.innerHTML = '';
 
-            // Create shuffled copies of the arrays to randomize button order
-            const shuffledClassifications = [...classifications];
-            const shuffledRegions = [...regions];
+            // --- Classification Buttons ---
+            const shuffledClassifications = [...allClassifications];
             shuffleArray(shuffledClassifications);
-            shuffleArray(shuffledRegions);
-
             shuffledClassifications.forEach(c => {
                 const button = document.createElement('button');
                 button.textContent = c;
@@ -306,7 +303,16 @@
                 classificationsContainer.appendChild(button);
             });
 
-            shuffledRegions.forEach(r => {
+            // --- Region Buttons (Dynamic Generation) ---
+            const correctRegion = currentProducer.region;
+            // Get all other regions
+            const incorrectRegions = allRegions.filter(r => r !== correctRegion);
+            shuffleArray(incorrectRegions);
+            // Select 4 incorrect regions to make a total of 5 choices
+            const regionChoices = [correctRegion, ...incorrectRegions.slice(0, 4)];
+            shuffleArray(regionChoices); // Shuffle the final 5 choices
+
+            regionChoices.forEach(r => {
                 const button = document.createElement('button');
                 button.textContent = r;
                 button.classList.add('btn-choice', 'w-full', 'text-left', 'p-4', 'rounded-lg', 'font-semibold');
